@@ -1,0 +1,20 @@
+{
+  "name": "babel-plugin-transform-jsx-top-down",
+  "version": "0.1.0",
+  "description": "A babel plugin to transpile jsx to js using a top-down navigation aproach",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BernardoS/transform-jsx-top-down.git"
+  },
+  "main": "src/index.js",
+  "keywords": [
+    "babel-plugin"
+  ],
+  "author": "BernardoS",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/BernardoS/transform-jsx-top-down/issues"
+  },
+  "homepage": "https://github.com/BernardoS/transform-jsx-top-down#readme",
+  "dependencies": {"babel-plugin-syntax-jsx": "^6.18.0"}
+}

@@ -1,0 +1,15 @@
+{
+  "name": "babel-plugin-transform-jsx-top-down-test",
+  "version": "0.0.1",
+  "description": "test folder for the babel-plugin-transform-jsx-top-down-test",
+  "main": "index.js",
+  "scripts": {
+    "test": "babel test/index.js"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "babel-cli": "^6.22.2"
+  }
+}
