@@ -2,15 +2,16 @@ const jsx = require('babel-plugin-syntax-jsx')
 
 Object.defineProperty(exports, "__esModule", {value: true})
 
-const TEXT_NODE = 'createTextNode'
-const H = 'createElement'
+const TEXT = 'text'
+const OPENING_ELEMENT = 'openingElement'
+const CLOSING_ELEMENT = 'closingElement'
 
 exports.default = function({types: t}) {
   return {
     inherits: jsx,
     visitor: {
       JSXElement: {
-        exit (path, state){
+        exit (path, {opts}){
           const openingElement = path.get('openingElement')
           const selfClosing = path.node.openingElement.selfClosing
           const attributes = t.objectExpression(openingElement.get('attributes').map(attr => {
@@ -19,23 +20,22 @@ exports.default = function({types: t}) {
             if (t.isJSXIdentifier(name)) name = t.identifier(name.name)
             return t.objectProperty(name, value)
           }))
-          const tagState = t.objectExpression([t.objectProperty(t.stringLiteral('open'), t.booleanLiteral(true)), t.objectProperty(t.stringLiteral('close'), t.booleanLiteral(selfClosing))])
           let identifier = openingElement.get('name')
           identifier = identifier.isReferencedIdentifier() || identifier.node.name === 'this' ? identifier.node : t.stringLiteral(identifier.node.name)
-          const expr = [t.callExpression(t.Identifier(state.opts.pragma_h || H), [identifier, attributes, tagState])]
+          const expr = [t.callExpression(t.Identifier(opts.openingElement || OPENING_ELEMENT), [identifier, attributes, t.booleanLiteral(selfClosing)])]
           .concat(path.get('children').map(child => child.node))
-          .concat(!selfClosing ? t.callExpression(t.Identifier(state.opts.pragma_h ||  H), [identifier, t.objectExpression([t.objectProperty(t.stringLiteral('open'), t.booleanLiteral(false)), t.objectProperty(t.stringLiteral('close'), t.booleanLiteral(true))])]) : [])
+          .concat(!selfClosing ? t.callExpression(t.Identifier(opts.closingElement ||  CLOSING_ELEMENT), [identifier]) : [])
           path.replaceWithMultiple(expr)
         }
       },
-      JSXText (path, state) {
+      JSXText (path, {opts}) {
         const text = path.node.value.trim().replace(/\n/, '')
-        if (text) path.replaceWith(t.callExpression(t.Identifier(state.opts.pragma_text || TEXT_NODE), [t.stringLiteral(text)]))
+        if (text) path.replaceWith(t.callExpression(t.Identifier(opts.pragma_text || TEXT), [t.stringLiteral(text)]))
         else path.remove()
       },
-      JSXExpressionContainer (path, state) {
+      JSXExpressionContainer (path, {opts}) {
         const expression = path.get('expression')
-        if (t.isTemplateLiteral(expression)) path.replaceWith(t.callExpression(t.Identifier(state.opts.pragma_text || TEXT_NODE), [expression.node]))
+        if (t.isTemplateLiteral(expression)) path.replaceWith(t.callExpression(t.Identifier(opts.pragma_text || TEXT), [expression.node]))
         else path.replaceWith(expression)
       },
       JSXEmptyExpression (path) {

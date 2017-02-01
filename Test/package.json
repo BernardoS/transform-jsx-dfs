@@ -1,7 +1,7 @@
 {
-  "name": "babel-plugin-transform-jsx-top-down-test",
+  "name": "babel-plugin-transform-jsx-dfs-test",
   "version": "0.0.1",
-  "description": "test folder for the babel-plugin-transform-jsx-top-down-test",
+  "description": "test folder for the babel-plugin-transform-jsx-dfs",
   "main": "index.js",
   "scripts": {
     "test": "babel test/index.js"

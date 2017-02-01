@@ -1,3 +1,6 @@
 {
-  "plugins": ["transform-jsx-top-down"]
+  "plugins": [["transform-jsx-dfs", {
+    "openingElement" : "open",
+    "closingElement" : "close"
+    }]]
 }
