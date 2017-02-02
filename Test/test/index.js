@@ -1,3 +1,1 @@
-(<div>texto
-  {null || <div/>}
-</div>)(<Teste/>)
+const x = <div teste={`oi`} {...oi}/>

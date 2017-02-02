@@ -1,5 +1,5 @@
 {
   "plugins": [
-    "transform-react-jsx"
+    "transform-jsx-top-down"
   ]
 }

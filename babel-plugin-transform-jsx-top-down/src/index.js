@@ -14,12 +14,7 @@ exports.default = function({types: t}) {
         exit (path, {opts}){
           const openingElement = path.get('openingElement')
           const selfClosing = path.node.openingElement.selfClosing
-          const attributes = t.objectExpression(openingElement.get('attributes').map(attr => {
-            let name = attr.get('elements')[0].node
-            const value = attr.get('elements')[1].node
-            if (t.isJSXIdentifier(name)) name = t.identifier(name.name)
-            return t.objectProperty(name, value)
-          }))
+          const attributes = t.objectExpression(openingElement.get('attributes').map(attr => attr.node))
           let identifier = openingElement.get('name')
           identifier = identifier.isReferencedIdentifier() || identifier.node.name === 'this' ? identifier.node : t.stringLiteral(identifier.node.name)
           const expr = [t.callExpression(t.Identifier(opts.openingElement || OPENING_ELEMENT), [identifier, attributes, t.booleanLiteral(selfClosing)])]
@@ -37,6 +32,10 @@ exports.default = function({types: t}) {
         const expression = path.get('expression')
         path.replaceWith(t.callExpression(t.Identifier(opts.pragma_append || APPEND), [expression.node]))
       },
+      JSXSpreadChild (path, {opts}) {
+        const expression = path.get('expression')
+        path.replaceWith(t.callExpression(t.Identifier(opts.pragma_append || APPEND), [t.spreadElement(expression.node)]))
+      },
       JSXEmptyExpression (path) {
         path.replaceWith(t.emptyStatement())
       },
@@ -46,10 +45,12 @@ exports.default = function({types: t}) {
         if (t.isJSXExpressionContainer(value)) {
           const expression = value.get('expression')
           if (t.isJSXElement(expression)) throw expression.buildCodeFrameError(`Element directly being invoked in attribute`)
-          if (t.isTemplateLiteral(expression)) return path.replaceWith(t.arrayExpression([name.node, expression.node]))
-          return path.replaceWith(t.arrayExpression([name.node, expression.node]))
+          return path.replaceWith(t.objectProperty(t.identifier(name.node.name), expression.node))
         }
-        path.replaceWith(t.arrayExpression([name.node, value.node || t.booleanLiteral(true)]))
+        path.replaceWith(t.objectProperty(t.identifier(name.node.name), value.node || t.booleanLiteral(true)))
+      },
+      JSXSpreadAttribute (path) {
+        path.replaceWith(t.spreadProperty(path.get('argument').node))
       }
     }
   }
