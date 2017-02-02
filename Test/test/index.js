@@ -1,1 +1,3 @@
-(<div></div>)(<Teste/>)
+(<div>texto
+  {null || <div/>}
+</div>)(<Teste/>)

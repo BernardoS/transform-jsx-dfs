@@ -1,6 +1,5 @@
 {
-  "plugins": [["transform-jsx-dfs", {
-    "openingElement" : "open",
-    "closingElement" : "close"
-    }]]
+  "plugins": [
+    "transform-react-jsx"
+  ]
 }
