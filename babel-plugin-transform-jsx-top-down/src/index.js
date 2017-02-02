@@ -2,9 +2,9 @@ const jsx = require('babel-plugin-syntax-jsx')
 
 Object.defineProperty(exports, "__esModule", {value: true})
 
-const TEXT = 'text'
-const OPENING_ELEMENT = 'openingElement'
-const CLOSING_ELEMENT = 'closingElement'
+const OPENING_ELEMENT = 'openElement'
+const CLOSING_ELEMENT = 'closeElement'
+const APPEND = 'appendChild'
 
 exports.default = function({types: t}) {
   return {
@@ -30,13 +30,12 @@ exports.default = function({types: t}) {
       },
       JSXText (path, {opts}) {
         const text = path.node.value.trim().replace(/\n/, '')
-        if (text) path.replaceWith(t.callExpression(t.Identifier(opts.pragma_text || TEXT), [t.stringLiteral(text)]))
+        if (text) path.replaceWith(t.callExpression(t.Identifier(opts.pragma_append || APPEND), [t.stringLiteral(text)]))
         else path.remove()
       },
       JSXExpressionContainer (path, {opts}) {
         const expression = path.get('expression')
-        if (t.isTemplateLiteral(expression)) path.replaceWith(t.callExpression(t.Identifier(opts.pragma_text || TEXT), [expression.node]))
-        else path.replaceWith(expression)
+        path.replaceWith(t.callExpression(t.Identifier(opts.pragma_append || APPEND), [expression.node]))
       },
       JSXEmptyExpression (path) {
         path.replaceWith(t.emptyStatement())
