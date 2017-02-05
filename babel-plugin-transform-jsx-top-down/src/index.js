@@ -12,11 +12,19 @@ exports.default = function({types: t}) {
     visitor: {
       JSXElement: {
         exit (path, {opts}){
-          const openingElement = path.get('openingElement')
-          const selfClosing = path.node.openingElement.selfClosing
-          const attributes = t.objectExpression(openingElement.get('attributes').map(attr => attr.node))
-          let identifier = openingElement.get('name')
-          identifier = identifier.isReferencedIdentifier() || identifier.node.name === 'this' ? identifier.node : t.stringLiteral(identifier.node.name)
+          const openingElement = path.node.openingElement
+          const selfClosing = openingElement.selfClosing
+          const attributes = t.objectExpression(openingElement.attributes)
+          let identifier = openingElement.name
+          if (identifier.name === 'this') identifier = t.thisExpression()
+          else if (t.isJSXMemberExpression(identifier)) {
+            let current = identifier.object
+            while (t.isJSXMemberExpression(current)) current = current.object
+            if (current.name !== 'this' && !path.scope.hasBinding(current.name)) {
+            	throw path.buildCodeFrameError(`${current.name} is not in the scope`)
+            }
+          }
+          else if (!path.scope.hasBinding(identifier.name) && !identifier.name !== 'this') identifier = t.stringLiteral(identifier.name)
           const expr = [t.callExpression(t.Identifier(opts.openingElement || OPENING_ELEMENT), [identifier, attributes, t.booleanLiteral(selfClosing)])]
           .concat(path.get('children').map(child => child.node))
           .concat(!selfClosing ? t.callExpression(t.Identifier(opts.closingElement ||  CLOSING_ELEMENT), [identifier]) : [])

@@ -1,5 +1,5 @@
 {
   "plugins": [
-    "transform-jsx-top-down"
+    "transform-jsx-dfs"
   ]
 }
