@@ -38,14 +38,12 @@ exports.default = function({types: t}) {
       },
       JSXExpressionContainer (path, {opts}) {
         const expression = path.get('expression')
+        if (t.isJSXEmptyExpression(expression)) return path.remove()
         path.replaceWith(t.callExpression(t.Identifier(opts.pragma_append || APPEND), [expression.node]))
       },
       JSXSpreadChild (path, {opts}) {
         const expression = path.get('expression')
         path.replaceWith(t.callExpression(t.Identifier(opts.pragma_append || APPEND), [t.spreadElement(expression.node)]))
-      },
-      JSXEmptyExpression (path) {
-        path.replaceWith(t.emptyStatement())
       },
       JSXAttribute (path) {
         const value = path.get('value')
