@@ -1,5 +1,5 @@
 {
-  "name": "babel-plugin-transform-jsx-dfs",
+  "name": "babel-plugin-transform-jsx-incremental",
   "version": "0.1.0",
   "description": "A babel plugin to transpile jsx to js using a top-down navigation aproach",
   "repository": {

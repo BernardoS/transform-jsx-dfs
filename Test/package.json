@@ -1,5 +1,5 @@
 {
-  "name": "babel-plugin-transform-jsx-dfs-test",
+  "name": "babel-plugin-transform-jsx-incremental-test",
   "version": "0.0.1",
   "description": "test folder for the babel-plugin-transform-jsx-dfs",
   "main": "index.js",

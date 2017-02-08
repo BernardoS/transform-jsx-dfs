@@ -2,8 +2,8 @@ const jsx = require('babel-plugin-syntax-jsx')
 
 Object.defineProperty(exports, "__esModule", {value: true})
 
-const OPENING_ELEMENT = 'openElement'
-const CLOSING_ELEMENT = 'closeElement'
+const OPEN_ELEMENT = 'openElement'
+const CLOSE_ELEMENT = 'closeElement'
 const APPEND = 'appendChild'
 
 exports.default = function({types: t}) {
@@ -25,25 +25,25 @@ exports.default = function({types: t}) {
             }
           }
           else if (!path.scope.hasBinding(identifier.name) && !identifier.name !== 'this') identifier = t.stringLiteral(identifier.name)
-          const expr = [t.callExpression(t.Identifier(opts.openingElement || OPENING_ELEMENT), [identifier, attributes, t.booleanLiteral(selfClosing)])]
-          .concat(path.get('children').map(child => child.node))
-          .concat(!selfClosing ? t.callExpression(t.Identifier(opts.closingElement ||  CLOSING_ELEMENT), [identifier]) : [])
+          const expr = [t.expressionStatement(t.callExpression(t.Identifier(opts.openElement || OPEN_ELEMENT), [identifier, attributes, t.booleanLiteral(selfClosing)]))]
+          .concat(path.get('children').map(child => t.expressionStatement(child.node)))
+          .concat(!selfClosing ? t.expressionStatement(t.callExpression(t.Identifier(opts.closeElement ||  CLOSE_ELEMENT), [identifier])) : [])
           path.replaceWithMultiple(expr)
         }
       },
       JSXText (path, {opts}) {
         const text = path.node.value.trim().replace(/\n/, '')
-        if (text) path.replaceWith(t.callExpression(t.Identifier(opts.pragma_append || APPEND), [t.stringLiteral(text)]))
+        if (text) path.replaceWith(t.callExpression(t.Identifier(opts.appendChild || APPEND), [t.stringLiteral(text)]))
         else path.remove()
       },
       JSXExpressionContainer (path, {opts}) {
         const expression = path.get('expression')
         if (t.isJSXEmptyExpression(expression)) return path.remove()
-        path.replaceWith(t.callExpression(t.Identifier(opts.pragma_append || APPEND), [expression.node]))
+        path.replaceWith(t.callExpression(t.Identifier(opts.appendChild || APPEND), [expression.node]))
       },
       JSXSpreadChild (path, {opts}) {
         const expression = path.get('expression')
-        path.replaceWith(t.callExpression(t.Identifier(opts.pragma_append || APPEND), [t.spreadElement(expression.node)]))
+        path.replaceWith(t.callExpression(t.Identifier(opts.appendChild || APPEND), [t.spreadElement(expression.node)]))
       },
       JSXAttribute (path) {
         const value = path.get('value')

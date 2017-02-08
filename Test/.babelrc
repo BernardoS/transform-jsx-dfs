@@ -1,5 +1,5 @@
 {
   "plugins": [
-    "transform-jsx-dfs"
+    ["transform-jsx-incremental", {"openElement": "h.open", "appendChild": "h.append", "closeElement": "h.close"}]
   ]
 }
