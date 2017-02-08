@@ -10,3 +10,21 @@ const staticEl = () => {
     <List.Item>item 4</List.Item>
   </List.Container>
 }
+
+template = () => {
+  (<style>
+    {`:host {display: inline-block;}
+    #container{
+      border-style: solid;
+      display: flex;
+      flex-direction: column
+    }`}
+  </style>);
+  (<div id="container">
+    <slot name="header"/>
+    <slot>
+      <Item>placeholder</Item>
+    </slot>
+    <slot name="footer"/>
+  </div>)
+}

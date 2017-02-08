@@ -25,10 +25,15 @@ exports.default = function({types: t}) {
             }
           }
           else if (!path.scope.hasBinding(identifier.name) && !identifier.name !== 'this') identifier = t.stringLiteral(identifier.name)
-          const expr = [t.expressionStatement(t.callExpression(t.Identifier(opts.openElement || OPEN_ELEMENT), [identifier, attributes, t.booleanLiteral(selfClosing)]))]
-          .concat(path.get('children').map(child => t.expressionStatement(child.node)))
-          .concat(!selfClosing ? t.expressionStatement(t.callExpression(t.Identifier(opts.closeElement ||  CLOSE_ELEMENT), [identifier])) : [])
-          path.replaceWithMultiple(expr)
+
+          const openExpression = t.callExpression(t.Identifier(opts.openElement || OPEN_ELEMENT), [identifier, attributes, t.booleanLiteral(selfClosing)])
+          const closeExpression = t.callExpression(t.Identifier(opts.closeElement ||  CLOSE_ELEMENT), [identifier])
+
+          path.replaceWithMultiple(
+            [t.expressionStatement(openExpression)]
+            .concat(path.get('children').map(child => t.expressionStatement(child.node)))
+            .concat(!selfClosing ? t.expressionStatement(closeExpression) : [])
+          )
         }
       },
       JSXText (path, {opts}) {
