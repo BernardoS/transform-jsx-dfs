@@ -29,11 +29,21 @@ exports.default = function({types: t}) {
           const openExpression = t.callExpression(t.Identifier(opts.openElement || OPEN_ELEMENT), [identifier, attributes, t.booleanLiteral(selfClosing)])
           const closeExpression = t.callExpression(t.Identifier(opts.closeElement ||  CLOSE_ELEMENT), [identifier])
 
-          path.replaceWithMultiple(
-            [t.expressionStatement(openExpression)]
-            .concat(path.get('children').map(child => t.expressionStatement(child.node)))
-            .concat(!selfClosing ? t.expressionStatement(closeExpression) : [])
-          )
+          const expressions = [t.expressionStatement(openExpression)]
+          .concat(path.get('children').map(child => t.expressionStatement(child.node)))
+          .concat(!selfClosing ? t.expressionStatement(closeExpression) : [])
+
+          if (!t.isJSXElement(path.parent) && !t.isFunction(path.scope.block)){
+            if (t.isSequenceExpression(path.parentPath)) {
+              const statements = path.container.map((node, i) => {
+                path.getSibling(i).stop()
+                return t.expressionStatement(node)
+              })
+              return path.parentPath.replaceWith(t.functionExpression(null, [], t.blockStatement(statements)))
+            }
+            return path.replaceWith(t.functionExpression(null, [], t.blockStatement(expressions)))
+          }
+          return path.replaceWithMultiple(expressions)
         }
       },
       JSXText (path, {opts}) {

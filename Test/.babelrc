@@ -1,5 +1,0 @@
-{
-  "plugins": [
-    ["transform-jsx-incremental", {"openElement": "h.open", "appendChild": "h.append", "closeElement": "h.close"}]
-  ]
-}
